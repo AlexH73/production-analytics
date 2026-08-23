@@ -123,14 +123,16 @@ class EventServiceImplTest {
     }
 
     @Test
-    @DisplayName("getById: should throw 404 when event is not found")
-    void getById_shouldThrow404_whenNotFound() {
+    @DisplayName("getById: should throw EventNotFoundException when event is not found")
+    void getById_shouldThrowEventNotFoundException_whenNotFound() {
+        when(eventRepository.findById(999L)).thenReturn(Optional.empty());
+
         EventNotFoundException ex = assertThrows(
                 EventNotFoundException.class,
                 () -> eventService.getById(999L)
         );
 
         assertEquals("Event with id 999 not found", ex.getMessage());
-
+        verify(eventRepository).findById(999L);
     }
 }

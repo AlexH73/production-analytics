@@ -78,6 +78,39 @@ class EventControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/events: should return 400 when description exceeds 200 characters")
+    void createEvent_longDescription_shouldReturn400() throws Exception {
+        CreateEventRequest request = new CreateEventRequest(
+                "MACHINE_STARTED",
+                "a".repeat(201),
+                LocalDateTime.of(2026, 8, 23, 10, 30)
+        );
+
+        mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.description").exists());
+    }
+
+    @Test
+    @DisplayName("POST /api/events: should return 400 when occurredAt is missing")
+    void createEvent_missingOccurredAt_shouldReturn400() throws Exception {
+        String body = """
+                {
+                  "type": "MACHINE_STARTED",
+                  "description": "desc"
+                }
+                """;
+
+        mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.occurredAt").exists());
+    }
+
+    @Test
     @DisplayName("GET /api/events/{id}: should return 404 for unknown id")
     void getUnknownEvent_shouldReturn404() throws Exception {
         mockMvc.perform(get("/api/events/999999"))
