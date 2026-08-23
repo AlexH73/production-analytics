@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "production_events")
 public class ProductionEvent {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "event_type")
