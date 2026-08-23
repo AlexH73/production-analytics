@@ -1,7 +1,9 @@
 package com.production.analytics.service;
 
 import com.production.analytics.dto.CreateEventRequest;
+import com.production.analytics.dto.ProductionEventResponse;
 import com.production.analytics.entity.ProductionEvent;
+import com.production.analytics.exception.EventNotFoundException;
 import com.production.analytics.repository.EventRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,8 +12,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,7 +48,7 @@ class EventServiceImplTest {
 
         when(eventRepository.save(any(ProductionEvent.class))).thenReturn(saved);
 
-        ProductionEvent result = eventService.create(request);
+        ProductionEventResponse result = eventService.create(request);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -71,7 +71,7 @@ class EventServiceImplTest {
         );
         when(eventRepository.findByType("MACHINE_STARTED")).thenReturn(events);
 
-        List<ProductionEvent> result = eventService.getAll("MACHINE_STARTED");
+        List<ProductionEventResponse> result = eventService.getAll("MACHINE_STARTED");
 
         assertEquals(1, result.size());
         verify(eventRepository).findByType("MACHINE_STARTED");
@@ -83,7 +83,7 @@ class EventServiceImplTest {
     void getAll_shouldReturnAll_whenTypeIsNull() {
         when(eventRepository.findAll()).thenReturn(List.of());
 
-        List<ProductionEvent> result = eventService.getAll(null);
+        List<ProductionEventResponse> result = eventService.getAll(null);
 
         assertNotNull(result);
         verify(eventRepository).findAll();
@@ -95,7 +95,7 @@ class EventServiceImplTest {
     void getAll_shouldReturnAll_whenTypeIsBlank() {
         when(eventRepository.findAll()).thenReturn(List.of());
 
-        List<ProductionEvent> result = eventService.getAll("   ");
+        List<ProductionEventResponse> result = eventService.getAll("   ");
 
         assertNotNull(result);
         verify(eventRepository).findAll();
@@ -113,22 +113,24 @@ class EventServiceImplTest {
         );
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
-        ProductionEvent result = eventService.getById(1L);
+        ProductionEventResponse result = eventService.getById(1L);
 
-        assertSame(event, result);
+        assertEquals(event.getId(), result.getId());
+        assertEquals(event.getType(), result.getType());
+        assertEquals(event.getDescription(), result.getDescription());
+        assertEquals(event.getOccurredAt(), result.getOccurredAt());
         verify(eventRepository).findById(1L);
     }
 
     @Test
     @DisplayName("getById: should throw 404 when event is not found")
     void getById_shouldThrow404_whenNotFound() {
-        when(eventRepository.findById(999L)).thenReturn(Optional.empty());
-
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
+        EventNotFoundException ex = assertThrows(
+                EventNotFoundException.class,
                 () -> eventService.getById(999L)
         );
 
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        assertEquals("Event with id 999 not found", ex.getMessage());
+
     }
 }

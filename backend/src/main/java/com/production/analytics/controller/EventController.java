@@ -1,7 +1,7 @@
 package com.production.analytics.controller;
 
 import com.production.analytics.dto.CreateEventRequest;
-import com.production.analytics.entity.ProductionEvent;
+import com.production.analytics.dto.ProductionEventResponse;
 import com.production.analytics.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,20 +20,20 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductionEvent> createEvent(@Valid @RequestBody CreateEventRequest request) {
-        ProductionEvent created = eventService.create(request);
+    public ResponseEntity<ProductionEventResponse> createEvent(@Valid @RequestBody CreateEventRequest request) {
+        ProductionEventResponse created = eventService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductionEvent>> getAllEvents(@RequestParam(required = false) String type) {
-        List<ProductionEvent> events = eventService.getAll(type);
+    public ResponseEntity<List<ProductionEventResponse>> getAllEvents(@RequestParam(required = false) String type) {
+        List<ProductionEventResponse> events = eventService.getAll(type);
         return ResponseEntity.ok(events);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductionEvent> getEventById(@PathVariable Long id) {
-        ProductionEvent event = eventService.getById(id);
+    public ResponseEntity<ProductionEventResponse> getEventById(@PathVariable Long id) {
+        ProductionEventResponse event = eventService.getById(id);
         return ResponseEntity.ok(event);
     }
 }

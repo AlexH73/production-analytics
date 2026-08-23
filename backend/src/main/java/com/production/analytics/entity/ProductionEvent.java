@@ -25,6 +25,6 @@ public class ProductionEvent {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "occurred_at")
+    @Column(name = "occurred_at", nullable = false)
     private LocalDateTime occurredAt;
 }

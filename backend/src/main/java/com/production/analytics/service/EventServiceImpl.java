@@ -1,11 +1,11 @@
 package com.production.analytics.service;
 
 import com.production.analytics.dto.CreateEventRequest;
+import com.production.analytics.dto.ProductionEventResponse;
 import com.production.analytics.entity.ProductionEvent;
+import com.production.analytics.exception.EventNotFoundException;
 import com.production.analytics.repository.EventRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,27 +18,44 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ProductionEvent create(CreateEventRequest request) {
+    public ProductionEventResponse create(CreateEventRequest request) {
         ProductionEvent event = new ProductionEvent();
         event.setType(request.getType());
         event.setDescription(request.getDescription());
         event.setOccurredAt(request.getOccurredAt());
 
-        return eventRepository.save(event);
+        ProductionEvent savedEvent = eventRepository.save(event);
+        return toResponse(savedEvent);
     }
 
     @Override
-    public List<ProductionEvent> getAll(String type) {
+    public List<ProductionEventResponse> getAll(String type) {
+        List<ProductionEvent> events;
+
         if (type != null && !type.isBlank()) {
-            return eventRepository.findByType(type);
+            events = eventRepository.findByType(type);
+        } else {
+            events = eventRepository.findAll();
         }
 
-        return eventRepository.findAll();
+        return events.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @Override
-    public ProductionEvent getById(Long id) {
+    public ProductionEventResponse getById(Long id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+                .map(this::toResponse)
+                .orElseThrow(() -> new EventNotFoundException(id));
+    }
+
+    private ProductionEventResponse toResponse(ProductionEvent event) {
+        return new ProductionEventResponse(
+                event.getId(),
+                event.getType(),
+                event.getDescription(),
+                event.getOccurredAt()
+        );
     }
 }

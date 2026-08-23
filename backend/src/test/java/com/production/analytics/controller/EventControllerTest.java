@@ -69,14 +69,23 @@ class EventControllerTest {
         mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.path").value("/api/events"))
+                .andExpect(jsonPath("$.fieldErrors.type").exists());
     }
 
     @Test
     @DisplayName("GET /api/events/{id}: should return 404 for unknown id")
     void getUnknownEvent_shouldReturn404() throws Exception {
         mockMvc.perform(get("/api/events/999999"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Event with id 999999 not found"))
+                .andExpect(jsonPath("$.path").value("/api/events/999999"));
     }
 
     @Test
