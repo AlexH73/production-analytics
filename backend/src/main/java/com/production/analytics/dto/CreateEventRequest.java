@@ -22,5 +22,5 @@ public class CreateEventRequest {
     private String description;
 
     @NotNull
-    LocalDateTime occurredAt;
+    private LocalDateTime occurredAt;
 }
