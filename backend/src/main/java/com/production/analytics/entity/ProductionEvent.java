@@ -20,7 +20,7 @@ public class ProductionEvent {
     private Long id;
 
     @Column(name = "event_type")
-    private String eventType;
+    private String type;
 
     @Column(name = "description")
     private String description;
