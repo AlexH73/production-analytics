@@ -26,6 +26,7 @@ TestResults.xml
 .idea/
 *.iml
 *.swp
+commit-template.txt
 
 # Backend
 backend/target/
