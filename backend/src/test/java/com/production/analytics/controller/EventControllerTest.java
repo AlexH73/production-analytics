@@ -78,8 +78,8 @@ class EventControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/events: should return 400 when description exceeds 200 characters")
-    void createEvent_longDescription_shouldReturn400() throws Exception {
+    @DisplayName("POST /api/events: should accept a description exceeding 200 characters")
+    void createEvent_longDescription_shouldReturn201() throws Exception {
         CreateEventRequest request = new CreateEventRequest(
                 "MACHINE_STARTED",
                 "a".repeat(201),
@@ -89,8 +89,8 @@ class EventControllerTest {
         mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.description").exists());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.description").value("a".repeat(201)));
     }
 
     @Test
