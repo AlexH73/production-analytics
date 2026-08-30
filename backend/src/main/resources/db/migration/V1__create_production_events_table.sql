@@ -3,7 +3,7 @@
 
 CREATE TABLE production_events (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    event_type VARCHAR(255) NOT NULL,   -- required field
+    event_type VARCHAR(50) NOT NULL,   -- required field
     description TEXT,                   -- nullable
     occurred_at TIMESTAMP NOT NULL      -- required field
 );
