@@ -47,6 +47,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- flyway -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
         <!-- tests -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

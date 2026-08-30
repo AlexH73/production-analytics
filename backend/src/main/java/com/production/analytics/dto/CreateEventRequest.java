@@ -16,9 +16,10 @@ import java.time.LocalDateTime;
 @Setter
 public class CreateEventRequest {
     @NotBlank
+    @Size(max = 50)
     private String type;
 
-    @Size(max = 200)
+    @Size(max = 2000)
     private String description;
 
     @NotNull

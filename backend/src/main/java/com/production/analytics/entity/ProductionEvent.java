@@ -19,10 +19,10 @@ public class ProductionEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "event_type", nullable = false)
+    @Column(name = "event_type", nullable = false, length = 50)
     private String type;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 2000)
     private String description;
 
     @Column(name = "occurred_at", nullable = false)
