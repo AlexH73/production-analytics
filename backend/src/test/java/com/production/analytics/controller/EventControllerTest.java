@@ -78,11 +78,11 @@ class EventControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/events: should accept a description exceeding 200 characters")
-    void createEvent_longDescription_shouldReturn201() throws Exception {
+    @DisplayName("POST /api/events: should accept a description of 2000 characters")
+    void createEvent_descriptionAtMaxLength_shouldReturn201() throws Exception {
         CreateEventRequest request = new CreateEventRequest(
                 "MACHINE_STARTED",
-                "a".repeat(201),
+                "a".repeat(2000),
                 LocalDateTime.of(2026, 8, 23, 10, 30)
         );
 
@@ -90,7 +90,39 @@ class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.description").value("a".repeat(201)));
+                .andExpect(jsonPath("$.description").value("a".repeat(2000)));
+    }
+
+    @Test
+    @DisplayName("POST /api/events: should return 400 when description exceeds 2000 characters")
+    void createEvent_descriptionExceedsMaxLength_shouldReturn400() throws Exception {
+        CreateEventRequest request = new CreateEventRequest(
+                "MACHINE_STARTED",
+                "a".repeat(2001),
+                LocalDateTime.of(2026, 8, 23, 10, 30)
+        );
+
+        mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.description").exists());
+    }
+
+    @Test
+    @DisplayName("POST /api/events: should return 400 when type exceeds 50 characters")
+    void createEvent_typeExceedsMaxLength_shouldReturn400() throws Exception {
+        CreateEventRequest request = new CreateEventRequest(
+                "a".repeat(51),
+                "description",
+                LocalDateTime.of(2026, 8, 23, 10, 30)
+        );
+
+        mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.type").exists());
     }
 
     @Test
