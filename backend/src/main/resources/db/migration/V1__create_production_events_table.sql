@@ -1,18 +1,16 @@
--- Создание таблицы production_events
--- Используется стандартный синтаксис GENERATED AS IDENTITY для автоинкремента 64-битного id.
--- Для СУБД, не поддерживающих этот синтаксис (например, MySQL), можно заменить на BIGINT AUTO_INCREMENT,
--- для PostgreSQL — на BIGSERIAL.
+-- Create the production_events table.
+-- Use the standard GENERATED AS IDENTITY syntax for an auto-incrementing 64-bit ID.
 
-CREATE TABLE IF NOT EXISTS production_events (
+CREATE TABLE production_events (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    event_type VARCHAR(255) NOT NULL,   -- обязательное поле
-    description TEXT,                   -- может быть NULL
-    occurred_at TIMESTAMP NOT NULL      -- обязательное поле
+    event_type VARCHAR(255) NOT NULL,   -- required field
+    description TEXT,                   -- nullable
+    occurred_at TIMESTAMP NOT NULL      -- required field
 );
 
--- При необходимости можно добавить комментарии к таблице и столбцам:
-COMMENT ON TABLE production_events IS 'Таблица событий производства';
-COMMENT ON COLUMN production_events.id IS 'Уникальный идентификатор, 64-битное автоинкрементное число';
-COMMENT ON COLUMN production_events.event_type IS 'Тип события, обязательное поле';
-COMMENT ON COLUMN production_events.description IS 'Описание события, может быть NULL';
-COMMENT ON COLUMN production_events.occurred_at IS 'Дата и время наступления события, обязательное поле';
+-- Add descriptions for the table and its columns.
+COMMENT ON TABLE production_events IS 'Production events table';
+COMMENT ON COLUMN production_events.id IS 'Unique auto-incrementing 64-bit identifier';
+COMMENT ON COLUMN production_events.event_type IS 'Event type, required field';
+COMMENT ON COLUMN production_events.description IS 'Event description, nullable';
+COMMENT ON COLUMN production_events.occurred_at IS 'Date and time when the event occurred, required field';
